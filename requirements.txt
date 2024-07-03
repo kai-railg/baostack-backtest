@@ -1,0 +1,6 @@
+-i https://pypi.org/simple 
+
+baostock~=0.8.9
+numpy~=2.0.0
+pandas~=2.2.2
+pydantic~=2.8.0
