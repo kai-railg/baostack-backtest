@@ -9,4 +9,5 @@ import os
 LOGGER_LEVEL = os.getenv("LOGGER_LEVEL", "DEBUG")
 
 
-
+SH_ALL_STOCK_URL = os.getenv("SH_ALL_STOCK_URL", "")
+SZ_ALL_STOCK_URL = os.getenv("SZ_ALL_STOCK_URL", "")

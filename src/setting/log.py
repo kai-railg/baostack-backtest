@@ -6,8 +6,6 @@
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
-import os
-import time
 
 from src.setting.settings import LOGGER_LEVEL
 
@@ -15,7 +13,9 @@ from src.setting.settings import LOGGER_LEVEL
 def setup_logger(name: str):
     # 创建一个 logger
     logger = logging.getLogger(name)
-    logger.setLevel(getattr(logging, LOGGER_LEVEL))  # 设置最低日志等级
+
+    # 设置最低日志等级
+    logger.setLevel(getattr(logging, LOGGER_LEVEL or "DEBUG"))
 
     # 创建日志文件名
     log_filename = f"./log/{name}.log"
@@ -30,8 +30,6 @@ def setup_logger(name: str):
     )
 
     # 设置本地时区
-    handler.suffix = "%Y-%m-%d"
-    handler.namer = lambda x: x.split(".")[0] + handler.suffix
 
     # 创建日志格式
     formatter = logging.Formatter(

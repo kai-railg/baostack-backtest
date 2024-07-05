@@ -3,7 +3,7 @@
 @Time    :   2024/07/03 15:48:59
 @Author  :   kai.wang@westwell-lab.com 
 '''
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator
 
 class BaoStockInfoSchema(BaseModel):
     # {'date': '2024-07-02',
@@ -38,3 +38,15 @@ class BaoStockInfoSchema(BaseModel):
     @model_validator(mode="after")
     def after(self):
         self.pctChg /= 100
+
+    
+    @field_validator('turn', mode="before")
+    def parse_value(cls, v):
+        if isinstance(v, str):
+            if v == "":
+                return 0.0
+            try:
+                return float(v)
+            except ValueError:
+                raise ValueError("Invalid float value")
+        return v

@@ -4,17 +4,21 @@
 @Author  :   kai.wang@westwell-lab.com 
 '''
 
-from src.schema import  StockInfoSchema
-from src.service import baostock_login, bsq
+from src.schema import StockInfoSchema
+from src.service import (
+    baostock_login,
+    bsq,
+    PullSHStock,
+    PullSZStock
+)
 
 if __name__ == "__main__":
-    with baostock_login() as rs:
-        result = bsq.query_k_data_plus(
-            StockInfoSchema(
-                code="600649",
-                name="城投控股",
-                exchanges_alias="sh",
-            )
-        )
-        print(result[0])
-
+    with baostock_login() as bsl:
+        for stock in PullSHStock().get_stock_info():
+            print("stock is ,", stock)
+            for stock_schema in bsq.query_k_data_plus(
+                stock=stock
+            ):
+                print("stock schema is ",stock_schema)
+                break
+            break

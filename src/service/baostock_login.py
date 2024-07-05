@@ -21,5 +21,5 @@ def baostock_login() -> Generator:
     """
     lg = bs.login()
     logger.debug(f"Login respond error_code: {lg.error_code}, error_msg: {lg.error_msg}")
-    yield 
+    yield lg
     bs.logout()
