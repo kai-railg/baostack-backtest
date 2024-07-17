@@ -5,7 +5,7 @@
 '''
 from pydantic import BaseModel, Field, model_validator, field_validator
 
-class BaoStockInfoSchema(BaseModel):
+class StockTradeInfoSchema(BaseModel):
     # {'date': '2024-07-02',
     # 'code': 'sh.600649',
     # 'open': '3.5300000000',

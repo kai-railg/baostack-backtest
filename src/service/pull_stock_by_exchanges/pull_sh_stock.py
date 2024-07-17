@@ -27,13 +27,13 @@ class PullSHStock(PullExchangesStockBase):
 
         resp = requests.post(self.request_url, headers={
             "Accept-Encoding": "gzip, deflate, br",
-            "Host": "prod-ua.sseinfo.com",
+            # "Host": "prod-ua.sseinfo.com",
             "Referer": "http://www.sse.com.cn/",
             "Origin": "http://www.sse.com.cn",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
         })
         if resp.status_code != 200:
-            raise Exception(f"上交所股票列表请求失败, {resp.text}")
+            raise Exception(f"上交所股票列表请求失败, {resp.status_code, resp.text}")
         return resp
 
     def read_stock_file(self) -> typing.Generator:

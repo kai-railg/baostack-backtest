@@ -14,11 +14,12 @@ from src.service import (
 
 if __name__ == "__main__":
     with baostock_login() as bsl:
-        for stock in PullSHStock().get_stock_info():
-            print("stock is ,", stock)
-            for stock_schema in bsq.query_k_data_plus(
-                stock=stock
-            ):
-                print("stock schema is ",stock_schema)
+        for stock_exchanges_cls in [PullSHStock, PullSZStock]:
+            for stock in stock_exchanges_cls().get_stock_info():
+                print("stock is ,", stock)
+                for stock_schema in bsq.query_k_data_plus(
+                    stock=stock
+                ):
+                    print("stock schema is ",stock_schema)
+                    break
                 break
-            break

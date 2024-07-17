@@ -12,7 +12,7 @@ import pandas as pd
 from baostock.data.resultset import ResultData
 
 from src.setting import logger
-from src.schema import StockInfoSchema, BaoStockInfoSchema
+from src.schema import StockInfoSchema, StockTradeInfoSchema
 
 __all__ = ["bsq"]
 
@@ -37,7 +37,7 @@ class BaoStockQuery(object):
                 row_dict["tradestatus"] == "0"
             ):
                 continue
-            yield BaoStockInfoSchema(**row_dict)
+            yield StockTradeInfoSchema(**row_dict)
 
     @property
     def _get_current_time(self) -> str:
@@ -64,7 +64,7 @@ class BaoStockQuery(object):
         if rs.error_code != '0':
             logger.error(
                 f'query_history_k_data_plus respond error_code: {rs.error_code}, error_msg: {rs.error_msg}')
-        return self._load_row_data(rs=rs)
+        yield from self._load_row_data(rs=rs)
 
 
 
