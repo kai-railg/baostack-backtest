@@ -22,6 +22,7 @@ class StockTradeInfoSchema(BaseModel):
     # 'isST': '0'}
     date: str= Field(..., alias='date', description="交易所行情日期	")
     code: str= Field(..., alias='code', description="证券代码")
+    name: str= Field(..., alias='name', description="证券名称")
     open: float = Field(..., alias='open', description="开盘价")
     high: float = Field(..., alias='high', description="最高价")
     low: float = Field(..., alias='low', description="最低价")
@@ -35,9 +36,9 @@ class StockTradeInfoSchema(BaseModel):
     pctChg: float = Field(..., alias='pctChg', description="涨跌幅（百分比）	日涨跌幅=[(指定交易日的收盘价-指定交易日前收盘价)/指定交易日前收盘价]*100%")
     isST: int = Field(..., alias='isST', description="是否ST股,1是,0否")
 
-    @model_validator(mode="after")
-    def after(self):
-        self.pctChg /= 100
+    # @model_validator(mode="after")
+    # def after(self):
+    #     self.pctChg /= 100
 
     
     @field_validator('turn', mode="before")

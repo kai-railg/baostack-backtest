@@ -6,7 +6,6 @@
 
 from pydantic import BaseModel, Field
 
-
 class TradeInfoSchema(BaseModel):
     holding_time: int = Field(default=..., description="持有可交易天数")
     start_time: str = Field(default=..., description="开始持有时间")
@@ -16,3 +15,5 @@ class TradeInfoSchema(BaseModel):
     handling_fees: float = Field(default=..., description="手续费")
     handling_fees_rate: float = Field(default=..., description="手续费率")
     backtest_type: str = Field(default=..., description="回测类型")
+    name: str = Field(default=..., description="股票名称")
+    code: str = Field(default=..., description="股票代码")

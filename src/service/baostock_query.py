@@ -24,20 +24,19 @@ class BaoStockQuery(object):
     def _default_fields(self):
         return "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,isST"
 
-    def _load_row_data(self, rs: ResultData) -> Generator:
+    def _load_row_data(self, rs: ResultData, **kwargs) -> Generator:
         while (rs.error_code == '0') & rs.next():
             row_dict = {
                 field: field_val for field,
                 field_val in zip(rs.fields, rs.get_row_data())
             }
             # 过滤 st股票, 停牌股票
-            print(row_dict)
             if (
                 row_dict["isST"] == "1") or (
                 row_dict["tradestatus"] == "0"
             ):
                 continue
-            yield StockTradeInfoSchema(**row_dict)
+            yield StockTradeInfoSchema(**{**row_dict, **kwargs})
 
     @property
     def _get_current_time(self) -> str:
@@ -64,7 +63,8 @@ class BaoStockQuery(object):
         if rs.error_code != '0':
             logger.error(
                 f'query_history_k_data_plus respond error_code: {rs.error_code}, error_msg: {rs.error_msg}')
-        yield from self._load_row_data(rs=rs)
+        kw = {"name": stock.name}
+        yield from self._load_row_data(rs=rs, **kw)
 
 
 
