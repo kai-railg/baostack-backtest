@@ -53,6 +53,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+*.log.*
 
 # Sphinx documentation
 docs/_build/
@@ -81,8 +82,11 @@ celerybeat-schedule
 test.py
 */test.py
 
-# static
+# static/
 # static/
 
 
 .flake8
+*.csv
+*.xls
+*.xlsx
