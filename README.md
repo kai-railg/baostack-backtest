@@ -8,3 +8,9 @@
     5. 行情
     6. 均线
 
+- Start
+    
+    ```python
+    # pip install -r requirements.txt 
+    python main.py
+    ```

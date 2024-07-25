@@ -83,10 +83,9 @@ test.py
 */test.py
 
 # static/
-# static/
-
 
 .flake8
 *.csv
 *.xls
 *.xlsx
+*.json

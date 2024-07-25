@@ -26,7 +26,7 @@ if __name__ == "__main__":
                     )
                     print("stock schema is ", stock_info)
                     bt_result = bt_cls().backtest(stock_info)
-                    print(bt_result[:100])
+                    print(bt_result[:350], "\n...\n", bt_result[-400:])
                     break
                 break
             break

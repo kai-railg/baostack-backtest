@@ -18,10 +18,12 @@ class PullSHStock(PullExchangesStockBase):
     上交所股票列表详情页
     http://www.sse.com.cn/assortment/stock/list/share/
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.request_url = SH_ALL_STOCK_URL or "http://query.sse.com.cn/sseQuery/commonExcelDd.do?sqlId=COMMON_SSE_CP_GPJCTPZ_GPLB_GP_L&type=inParams&CSRC_CODE=&STOCK_CODE=&REG_PROVINCE=&STOCK_TYPE=1&COMPANY_STATUS=2,4,5,7,8"
-        self.file_path = "./src/static/SH_STOCK_LIST.xls"
+        self.exchanges_name = "上交所"
+        self.file_path = f"./src/static/{self.exchanges_name}股票列表.xls"
 
     def request_exchanges_all_stock(self) -> requests.Response:
 

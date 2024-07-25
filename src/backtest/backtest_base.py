@@ -13,8 +13,9 @@ from src.setting import logger
 
 class BackTestBase(object):
     def __init__(self) -> None:
-        self.handling_fees_rate = 0
+        self.handling_fees_rate = 0.02
         self.backtest_type = ""
+        self.base_money = 10000
 
     @abstractmethod
     def backtest(self, stock_info: Generator):
@@ -29,57 +30,42 @@ class BackTestBase(object):
         if not trade_res_list:
             logger.info("No trade result")
             return
-        all_holding_time = 0
-        total_profit_rate = 0
-        total_profit_amount = 0
 
-        result = []
-        msg = f"Trade detail, stock is {trade_res_list[0].name, trade_res_list[0].code}"
-        for trade_schema in trade_res_list:
-            profit_rate = trade_schema.profit_rate * \
-                (1-trade_schema.handling_fees_rate)
-            result.append(
-                {
-                    "profit_rate": f"{round(profit_rate, 3)}%",
-                    "holding_time": trade_schema.holding_time,
-                    "start_time":  trade_schema.start_time,
-                    "end_time": trade_schema.end_time,
-                    "profit_amount":  trade_schema.profit_amount,
-                    "backtest_type": trade_schema.backtest_type,
-                }
-            )
+        csv_fieldnames: List[str] = trade_res_list[0].get_csv_fields()
+        max_length = max([len(i) for i in csv_fieldnames]) + 1
 
-            all_holding_time += trade_schema.holding_time
-            total_profit_rate += profit_rate
-            total_profit_amount += trade_schema.profit_amount
+        with open(file=f"./src/output/{trade_res_list[0].name}-{trade_res_list[0].code}-{self.backtest_type}-backtest.csv",
+                  mode='w',
+                  newline='') as csv_f:
 
-        csv_fieldnames = [
-            "profit_rate",
-            "holding_time",
-            "start_time",
-            "end_time",
-            "profit_amount",
-            "backtest_type"
-        ]
-        csv_f = open(
-            f"./src/output/{trade_res_list[0].name}-{trade_res_list[0].code}-{self.backtest_type}-backtest.csv", 'w', newline='')
-        writer = csv.DictWriter(csv_f, fieldnames=csv_fieldnames)
-        writer.writeheader()
+            writer = csv.writer(csv_f)
+            writer.writerow(csv_fieldnames)
 
-        for num, res in enumerate(result, start=1):
-            msg += f"\nTrade number is {num}, \n"
-            msg += f"    profit_rate: {res['profit_rate']}%, \n"
-            msg += f"    holding_time: {res['holding_time']}, \n"
-            msg += f"    start_time: {res['start_time']}, \n"
-            msg += f"    end_time: {res['end_time']}, \n"
-            msg += f"    profit_amount: {res['profit_amount']}, \n"
-            msg += f"    backtest_type: {res['backtest_type']}, \n"
-            writer.writerow(res)
-        csv_f.close()
+            all_holding_time = 0
+            total_profit_rate = 0
+            total_profit_amount = 0
+            handling_fees = 0
 
-        msg += f"Total holding time is {all_holding_time}, \n"
-        msg += f"Total profit rate is {total_profit_rate}%, \n"
-        msg += f"Total profit amount is {total_profit_amount}"
+            msg = f"Trade detail, stock is {trade_res_list[0].name, trade_res_list[0].code}"
+
+            for num, trade_schema in enumerate(trade_res_list, start=1):
+                msg += f"\n交易次数: {num}, \n"
+
+                row = trade_schema.get_csv_row()
+                for dec, col in zip(csv_fieldnames, row):
+                    msg += f"    {dec.ljust(max_length)}: {col}\n"
+
+                all_holding_time += trade_schema.holding_time
+                total_profit_rate += trade_schema.profit_rate
+                total_profit_amount += trade_schema.profit_amount
+                handling_fees += trade_schema.handling_fees
+
+                writer.writerow(row)
+
+        msg += f"Total holding days are {all_holding_time}, \n"
+        msg += f"Total profit rate is {self.round(total_profit_rate)}%, \n"
+        msg += f"Total profit amount is {self.round(total_profit_amount)}\n"
+        msg += f"Total handling fees is {self.round(handling_fees)}\n"
         logger.info(msg)
         return msg
 
@@ -94,21 +80,38 @@ class BackTestBase(object):
         收益统计
         """
         trade_result = []
+
+        start_money = self.base_money
         for stock_info_list in trade_list:
             if not stock_info_list:
                 continue
 
-            pct = round(sum([stock.pctChg for stock in stock_info_list]), 2)
+            pct = self.round(
+                sum([stock.pctChg for stock in stock_info_list]), 2)
+
+            end_money = self.round(start_money * (1 + pct / 100))
+            handling_fees = round(end_money * self.handling_fees_rate * 0.01)
+            end_money -= handling_fees
+            profit_amount = self.round(end_money - start_money)
+
             trade_result.append(TradeInfoSchema(
                 holding_time=len(stock_info_list),
                 start_time=stock_info_list[0].date,
                 end_time=stock_info_list[-1].date,
-                profit_rate=pct,
-                profit_amount=0,
-                handling_fees=0,
+                start_amount=start_money,
+                end_amount=end_money,
+                profit_rate=round(pct - self.handling_fees_rate),
+                profit_amount=profit_amount,
+                handling_fees=handling_fees,
                 handling_fees_rate=self.handling_fees_rate,
                 backtest_type=self.backtest_type,
                 name=stock_info_list[0].name,
                 code=stock_info_list[0].code,
             ))
+
+            start_money = end_money
         return trade_result
+
+    @classmethod
+    def round(cls, number, nd=2):
+        return round(float(number), nd)

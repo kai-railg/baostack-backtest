@@ -14,8 +14,8 @@ from src.setting import logger
 class BackTestKDJ(BackTestBase):
     def __init__(self) -> None:
         # 万二手续费, 百分比单位
-        self.handling_fees_rate = 0.02
-        self.backtest_type = "kdj"
+        super().__init__()
+        self.backtest_type = "kdj金叉买入, 死叉卖出"
 
     def backtest(self, stock_info: Generator):
         """
