@@ -42,7 +42,7 @@ class BaoStockQuery(object):
     def _get_current_time(self) -> str:
         return f"{datetime.now().year}-{datetime.now().month}-{datetime.now().day}"
 
-    def query_k_data_plus(self, stock: StockInfoSchema, adjustflag=2, frequency="d") -> Generator:
+    def query_k_data_plus(self, stock: StockInfoSchema, adjustflag=2, frequency="d", start_date=None) -> Generator:
         """
         #### 获取沪深A股历史K线数据 ####
         # 详细指标参数,参见“历史行情指标参数”章节;“分钟线”参数与“日线”参数不同。“分钟线”不包含指数。
@@ -55,7 +55,7 @@ class BaoStockQuery(object):
         rs: ResultData = bs.query_history_k_data_plus(
             stock.get_stock_code(),
             self._default_fields,
-            start_date=stock.get_appear_time(),
+            start_date=start_date or stock.get_appear_time(),
             end_date=self._get_current_time,
             frequency=frequency,
             adjustflag=f"{adjustflag}"
